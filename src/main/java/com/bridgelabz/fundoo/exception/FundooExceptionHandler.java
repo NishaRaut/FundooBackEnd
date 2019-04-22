@@ -38,6 +38,11 @@ public ResponseEntity<Response> EmailExceptionHandler(TokenException e)
 	Response statusInfo = ResponseInfo.getResponse(e.getErrorCode(),e.getMessage());
 	return new ResponseEntity<>(statusInfo,HttpStatus.OK);	
 }
-
+@ExceptionHandler(NoteException.class)
+public ResponseEntity<Response> NoteExceptionHandler(Exception e)
+{
+	Response statusInfo = ResponseInfo.getResponse(101,e.getMessage());
+	return new ResponseEntity<>(statusInfo,HttpStatus.OK);	
+}
 
 }

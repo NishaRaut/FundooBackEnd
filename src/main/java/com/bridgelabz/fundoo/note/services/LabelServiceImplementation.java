@@ -36,8 +36,8 @@ public class LabelServiceImplementation implements LabelService{
 	private ModelMapper modelMapper;
 	@Autowired
 	Environment environment;
-	@Autowired
-	Response response;
+//	@Autowired
+//	Response response;
 	@Autowired
 	private UserRepository userRepository;
 	
@@ -56,7 +56,7 @@ public class LabelServiceImplementation implements LabelService{
 		label.setUser(user);
 		label = labelRepository.save(label);
 
-		response = ResponseInfo.getResponse(Integer.parseInt(environment.getProperty("status.createLabel.successCode")),
+		Response response = ResponseInfo.getResponse(Integer.parseInt(environment.getProperty("status.createLabel.successCode")),
 				environment.getProperty("status.createLabel.successMessage"));
 		return response;
 		
@@ -78,7 +78,7 @@ public class LabelServiceImplementation implements LabelService{
 		label= labelRepository.save(label);
 		if(label==null)
 		throw new NoteException(environment.getProperty("status.updateLabel.failedMessage"), Integer.parseInt(environment.getProperty("status.updateLabel.failedCode")));
-		response = ResponseInfo.getResponse(Integer.parseInt(environment.getProperty("status.updateLabel.successCode")),
+		Response response = ResponseInfo.getResponse(Integer.parseInt(environment.getProperty("status.updateLabel.successCode")),
 				environment.getProperty("status.updateLabel.successMessage"));
 		return response;
 	}
@@ -93,7 +93,7 @@ public class LabelServiceImplementation implements LabelService{
 		 labelRepository.deleteById(labelId);
 	    if(labelRepository.findByLableIdAndUser(labelId, user).isPresent())
 	    	throw new NoteException(environment.getProperty("status.label.delete.errorMessage"),Integer.parseInt(environment.getProperty("status.label.delete.errorCode")));
-		response = ResponseInfo.getResponse(Integer.parseInt(environment.getProperty("status.deleteLabel.successCode")),
+	    Response response = ResponseInfo.getResponse(Integer.parseInt(environment.getProperty("status.deleteLabel.successCode")),
 		environment.getProperty("status.deleteLabel.successMessage"));
 		return response;
 	}

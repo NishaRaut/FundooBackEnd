@@ -2,6 +2,7 @@ package com.bridgelabz.fundoo.note.model;
 
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,6 +34,7 @@ public class Note {
 	private boolean isTrash;
 	private LocalDateTime createDate;
 	private LocalDateTime modifyDate;
+	private Date reminder;
 
 	@ManyToOne
 	@JoinColumn(name="User_Id")
@@ -43,8 +45,8 @@ public class Note {
 			CascadeType.PERSIST,
 			CascadeType.MERGE
 	})
-	@JoinTable(name = "note_label", joinColumns = @JoinColumn(name = "note_id"), 
-	inverseJoinColumns = @JoinColumn(name = "label_id"))
+	@JoinTable(name = "note_label", joinColumns = @JoinColumn(name = "id"), 
+	inverseJoinColumns = @JoinColumn(name = "labelId"))
 	private Set<Label> labels;
 
 	//
@@ -159,4 +161,18 @@ public class Note {
 		}
 		throw new IllegalArgumentException("Can't compare non-Note objects");
 	}
+	public Date getReminder() {
+		return reminder;
+	}
+	public void setReminder(Date reminder) {
+		this.reminder = reminder;
+	}
+	public Set<Label> getLabels() {
+		return labels;
+	}
+	public void setLabels(Set<Label> labels) {
+		this.labels = labels;
+	}
+	
+
   }

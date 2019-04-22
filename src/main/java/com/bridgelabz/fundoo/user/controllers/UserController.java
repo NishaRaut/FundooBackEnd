@@ -16,11 +16,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bridgelabz.fundoo.response.Response;
 import com.bridgelabz.fundoo.response.ResponseToken;
-import com.bridgelabz.fundoo.user.dto.ForgotDTO;
+
 import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.ResetDTO;
 import com.bridgelabz.fundoo.user.dto.UserDTO;
@@ -28,7 +29,7 @@ import com.bridgelabz.fundoo.user.services.UserServices;
 
 
 @RestController 
-@CrossOrigin(origins="http://localhost:4200",allowedHeaders="*",exposedHeaders={"jwtTokens"})
+@CrossOrigin(origins="http://localhost:4200",allowedHeaders="*",exposedHeaders={"Authorization"})
 public class UserController {
 	
 	static final Logger logger=LoggerFactory.getLogger(UserController.class);
@@ -72,11 +73,11 @@ public class UserController {
 	}
 	
 	@PostMapping("/forgetPassword")
-	public ResponseEntity<Response> forgetPassword(@RequestBody ForgotDTO email) throws Exception
+	public ResponseEntity<Response> forgetPassword(@RequestParam String email) throws Exception
 	{
 	/*	logger.info("email:"+loginDTO.getEmail());
 		logger.trace("Forget Password");*/
-		Response response = userServices.forgotPassword(email.getEmail());
+		Response response = userServices.forgotPassword(email);
 		return new ResponseEntity<Response>(response, HttpStatus.OK);
 	}
 	@PutMapping("resetpassword/{token}")

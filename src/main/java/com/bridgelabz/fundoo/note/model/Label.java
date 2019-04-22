@@ -89,4 +89,14 @@ public class Label {
 	public int hashCode() {
 		return (name).hashCode();
 	}
+	public Set<Note> getNotes() {
+		return Notes;
+	}
+	public void setNotes(Set<Note> notes) {
+		Notes = notes;
+	}
+	public void setLableId(long lableId) {
+		this.lableId = lableId;
+	}
+	
 }

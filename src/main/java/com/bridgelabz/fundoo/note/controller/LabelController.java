@@ -33,8 +33,8 @@ public class LabelController {
 	@Autowired
 	Environment environment;
 
-	@Autowired
-	Response response;
+//	@Autowired
+//	Response response;
 
 	@PostMapping("/createLabel")
 	public ResponseEntity<Response> create(@RequestBody LabelDto labelDto, @RequestHeader String token) throws Exception
@@ -42,7 +42,11 @@ public class LabelController {
 		logger.info("Label DTO:"+labelDto);
 		logger.info("Token:"+token);
 		logger.trace("Create note:");
-		response=labelService.createLabel(labelDto, token);
+		Response response;
+		if(labelDto.getName().equals("") || labelDto.getName() == null)
+		 response = ResponseInfo.getResponse(-499,"label  should not be empty");
+		else
+           response=labelService.createLabel(labelDto, token);
 		return new ResponseEntity<>(response,HttpStatus.OK);
 
 
@@ -53,8 +57,9 @@ public class LabelController {
 		logger.info("Label DTO:"+labelDto);
 		logger.info("Token:"+token);
 		logger.trace("Update note:");
+		Response response;
 		if(labelDto.getName().equals("") || labelDto.getName() == null)
-			response = ResponseInfo.getResponse(-499,"label name should not be empty");
+			 response = ResponseInfo.getResponse(-499,"label name should not be empty");
 		else
 			response = labelService.updateLabel(labelDto, token, labelId);
 		return new ResponseEntity<>(response,HttpStatus.OK);
@@ -65,7 +70,7 @@ public class LabelController {
 	{
 		logger.info("Label Id:"+labelId);
 		logger.trace("Delete Label:");
-		response = labelService.deleteLable(labelId, token);
+		Response response = labelService.deleteLable(labelId, token);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	@GetMapping("/allLabels")

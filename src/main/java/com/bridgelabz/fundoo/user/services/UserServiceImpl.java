@@ -117,7 +117,7 @@ public class UserServiceImpl implements UserServices {
 		{
 			throw new UserException(environment.getProperty("status.forgotPassword.invalidEmail"), Integer.parseInt(environment.getProperty("status.forgotPassword.errorCode")));
 		}
-		String passwordResetLink = "http://localhost:8080/resetpassword/";
+		String passwordResetLink = "http://localhost:4200/reset/";
 		passwordResetLink = passwordResetLink + userToken.generateToken(userAvailable.get().getId());
 		mailService.sendEmail(userAvailable.get().getEmail(),"Password Reset Link",passwordResetLink);
 		Response response = ResponseInfo.getResponse(Integer.parseInt(environment.getProperty("status.success.code")),
