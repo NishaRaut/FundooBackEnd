@@ -9,6 +9,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +27,7 @@ import com.bridgelabz.fundoo.utility.ResponseInfo;
 
 @RestController
 @PropertySource("classpath:message.properties")
+@CrossOrigin(origins="http://localhost:4200")
 public class LabelController {
 	private static final Logger logger = LoggerFactory.getLogger(LabelController.class);
 	@Autowired
@@ -37,7 +39,7 @@ public class LabelController {
 //	Response response;
 
 	@PostMapping("/createLabel")
-	public ResponseEntity<Response> create(@RequestBody LabelDto labelDto, @RequestHeader String token) throws Exception
+	public ResponseEntity<Response> create(@RequestBody LabelDto labelDto, @RequestHeader("jwt_Token")  String token) throws Exception
 	{
 		logger.info("Label DTO:"+labelDto);
 		logger.info("Token:"+token);
@@ -52,7 +54,7 @@ public class LabelController {
 
 	}
 	@PostMapping("/updateLabel/{labelId}")
-	public ResponseEntity<Response> update(@RequestBody LabelDto labelDto,@RequestHeader String token,@PathVariable long labelId)throws Exception
+	public ResponseEntity<Response> update(@RequestBody LabelDto labelDto,@RequestHeader("jwt_Token") String token,@PathVariable long labelId)throws Exception
 	{
 		logger.info("Label DTO:"+labelDto);
 		logger.info("Token:"+token);
@@ -66,7 +68,7 @@ public class LabelController {
 	}
 
 	@PutMapping("/deleteLabel")
-	public ResponseEntity<Response> deleteLablePermanently(@RequestBody Long labelId, @RequestHeader String token) throws Exception
+	public ResponseEntity<Response> deleteLablePermanently(@RequestBody Long labelId, @RequestHeader("jwt_Token") String token) throws Exception
 	{
 		logger.info("Label Id:"+labelId);
 		logger.trace("Delete Label:");
@@ -74,7 +76,7 @@ public class LabelController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	@GetMapping("/allLabels")
-	public ResponseEntity<List<Label>> getAllLabels(@RequestHeader String token) throws Exception
+	public ResponseEntity<List<Label>> getAllLabels(@RequestHeader("jwt_Token") String token) throws Exception
 	{
 		logger.info("Token:"+token);
 		logger.info("Get all Labels:");

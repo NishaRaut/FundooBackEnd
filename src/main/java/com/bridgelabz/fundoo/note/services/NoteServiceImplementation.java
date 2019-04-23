@@ -253,16 +253,13 @@ public class NoteServiceImplementation implements NoteService {
 		System.out.println("33333");
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 		  Date date =dateFormat.parse(time);
-		  System.out.println("33333444");
-		  System.out.println(noteId);
-		 Note note=noteRepository.findById(noteId).orElseThrow(() -> new RuntimeException("ha"));
-		 //Note note=noteRepository.findById(noteId).get();
-		 System.out.println(noteId);
-		  System.out.println(note);
-		  System.out.println("33333666");
+		  System.out.println(date);
+		 Note note=noteRepository.findById(noteId).get();
+
 		  note.setReminder(date);
+		  System.out.println(note);
 		  noteRepository.save(note);
-		  Response response = ResponseInfo.getResponse(400,"Set reminder successfully");
+		  Response response = ResponseInfo.getResponse(400,environment.getProperty("status.reminder.successMessage"));
 		return response;
 	}
 
