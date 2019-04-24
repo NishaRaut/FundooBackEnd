@@ -9,13 +9,13 @@ import com.bridgelabz.fundoo.note.model.Note;
 import com.bridgelabz.fundoo.response.Response;
 
 public interface NoteService {
-	Response create(NoteDto noteDto, String token) throws Exception;
+	Response create(NoteDto noteDto, String token) ;
 
-	Response updateNote(NoteDto noteDto, String token, long noteId) throws Exception;
+	Response updateNote(NoteDto noteDto, String token, long noteId);
 
-	Response deleteNotePermanently(Long noteId, String token) throws Exception;
+	Response deleteNotePermanently(Long noteId, String token) ;
 
-	List<Note> getAllNote(String token) throws Exception;
+	List<Note> getAllNote(String token) ;
 
 	Note getNote(String token, Long noteId) throws Exception;
 
@@ -29,9 +29,9 @@ public interface NoteService {
 
 	Response removeLabelFromNote(String userToken, long noteId, long labelId);
 
-	Response ReminderSet(long noteId, String time) throws ParseException;
+	Response ReminderSet(long noteId, String time,String token) throws ParseException, Exception;
 
-	Response ReminderRemove(long noteId)throws ParseException;
+	Response ReminderRemove(long noteId,String token)throws ParseException;
 
 	Response colorSet(long noteId, String color, String token)throws Exception;
 }

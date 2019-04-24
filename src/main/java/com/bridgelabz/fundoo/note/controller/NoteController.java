@@ -42,7 +42,7 @@ public class NoteController {
 	 */
 
 	@PostMapping("/createNote")
-	public ResponseEntity<Response> Create(@RequestBody NoteDto noteDto, @RequestHeader("jwt_Token") String token) throws Exception {
+	public ResponseEntity<Response> Create(@RequestBody NoteDto noteDto, @RequestHeader("jwt_Token") String token) {
 		System.out.println("ashjdghasgdhjasdgfhjasgf");
 		logger.info("Note DTO:" + noteDto);
 		logger.trace("Create note:");
@@ -53,7 +53,7 @@ public class NoteController {
 
 	@PutMapping("/updateNote/{noteId}")
 	public ResponseEntity<Response> UpdateNote(@RequestBody NoteDto noteDto,@RequestHeader("jwt_Token") String token,
-			@PathVariable long noteId) throws Exception {
+			@PathVariable long noteId) {
 		logger.info("Note DTO:" + noteDto);
 		logger.trace("Update note:");
 		Response response = noteServices.updateNote(noteDto, token, noteId);
@@ -62,7 +62,7 @@ public class NoteController {
 
 	@DeleteMapping("/deleteNote/{noteId}")
 	public ResponseEntity<Response> deleteNotePermanently(@PathVariable Long noteId, @RequestHeader("jwt_Token") String token)
-			throws Exception {
+		{
 		logger.info("Note Id:" + noteId);
 		logger.trace("Delete note:");
 		Response response = noteServices.deleteNotePermanently(noteId, token);
@@ -70,7 +70,7 @@ public class NoteController {
 	}
 
 	@GetMapping("/allNotes")
-	public ResponseEntity<List<Note>> getAllNotes(@RequestHeader("jwt_Token") String token) throws Exception {
+	public ResponseEntity<List<Note>> getAllNotes(@RequestHeader("jwt_Token") String token)  {
 		logger.info("Token:" + token);
 		logger.info("Get all notes:");
 		List<Note> allNotes = noteServices.getAllNote(token);
@@ -148,22 +148,22 @@ public class NoteController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	@PostMapping("/notes/{id}")
-	public ResponseEntity<Response> addReminder(@PathVariable(value="id") long noteId,@RequestParam String time) throws ParseException 
+	public ResponseEntity<Response> addReminder(@PathVariable(value="id") long noteId,@RequestHeader("jwt_Token") String token,@RequestParam String time) throws Exception 
 
        {
 			
 		System.out.println("Note Created");
-	    Response response= noteServices.ReminderSet(noteId,time);
+	    Response response= noteServices.ReminderSet(noteId,time,token);
 	    return new ResponseEntity<Response>(response,HttpStatus.OK);
 	     
 	}
 	@PostMapping("/notes/remove/{id}")
-	public ResponseEntity<Response> removeReminder(@PathVariable(value="id") long noteId) throws ParseException 
+	public ResponseEntity<Response> removeReminder(@PathVariable(value="id") long noteId,@RequestHeader("jwt_Token") String token) throws ParseException 
 
        {
 			
 		System.out.println("Note Created");
-	    Response response= noteServices.ReminderRemove(noteId);
+	    Response response= noteServices.ReminderRemove(noteId,token);
 		
 	     return new ResponseEntity<Response>(response,HttpStatus.OK);	
 	}

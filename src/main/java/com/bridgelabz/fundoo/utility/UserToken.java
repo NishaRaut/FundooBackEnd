@@ -12,6 +12,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import com.auth0.jwt.interfaces.Verification;
 import com.bridgelabz.fundoo.exception.TokenException;
+import com.bridgelabz.fundoo.exception.UserException;
 
 @Component
 @PropertySource("classpath:message.properties")
@@ -36,7 +37,7 @@ public class UserToken
 		}
 	}
 	
-	public Long tokenVerify(String token) throws Exception	
+	public Long tokenVerify(String token) 
 	{
 		Long userid;
 		try {
@@ -48,7 +49,7 @@ public class UserToken
 		}
 		catch(Exception exception)
 		{
-			throw new Exception("Token Not Verified");
+			throw new UserException("Token Not Verified",101);
 		}
 		
 		return userid;
