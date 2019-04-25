@@ -79,7 +79,7 @@ public class NoteController {
 	}
 
 	@GetMapping("/note/{noteId}")
-	public Note getNote(@RequestHeader String token, @PathVariable Long noteId) throws Exception {
+	public Note getNote(@RequestHeader String token, @PathVariable Long noteId) {
 		logger.info("Token:" + token);
 		logger.info("Note Id:" + noteId);
 		logger.trace("Get note by id:");
@@ -89,7 +89,7 @@ public class NoteController {
 
 	@PutMapping("/pinNote/{noteId}")
 	public ResponseEntity<Response> pinnedUnpinned(@RequestHeader("jwt_Token") String token, @PathVariable Long noteId)
-			throws Exception {
+			 {
 		logger.info("Token:" + token);
 		logger.info("Note Id:" + noteId);
 		logger.trace("Pinned/Unpinned by id:");
@@ -101,7 +101,7 @@ public class NoteController {
 
 	@PutMapping("/trashNote/{noteId}")
 	public ResponseEntity<Response> trashedUntrashed(@RequestHeader("jwt_Token") String token, @PathVariable Long noteId)
-			throws Exception {
+			 {
 		logger.info("Token:" + token);
 		logger.info("Note Id:" + noteId);
 		logger.trace("Trashed/Untrashed by id:");
@@ -112,7 +112,7 @@ public class NoteController {
 
 	@PutMapping("/archiveNote/{noteId}")
 	public ResponseEntity<Response> archiveUnarchive(@RequestHeader("jwt_Token") String token, @PathVariable Long noteId)
-			throws Exception {
+			 {
 		logger.info("Token:" + token);
 		logger.info("Note Id:" + noteId);
 		logger.trace("Trashed/Untrashed by id:");
@@ -148,7 +148,7 @@ public class NoteController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	@PostMapping("/notes/{id}")
-	public ResponseEntity<Response> addReminder(@PathVariable(value="id") long noteId,@RequestHeader("jwt_Token") String token,@RequestParam String time) throws Exception 
+	public ResponseEntity<Response> addReminder(@PathVariable(value="id") long noteId,@RequestHeader("jwt_Token") String token,@RequestParam String time)throws ParseException  
 
        {
 			
@@ -168,7 +168,7 @@ public class NoteController {
 	     return new ResponseEntity<Response>(response,HttpStatus.OK);	
 	}
 	@PostMapping("/notes/color/{id}")
-	public ResponseEntity<Response> noteColor(@PathVariable(value="id") long noteId,@RequestParam String color,@RequestHeader("jwt_Token") String token) throws Exception
+	public ResponseEntity<Response> noteColor(@PathVariable(value="id") long noteId,@RequestParam String color,@RequestHeader("jwt_Token") String token)
 	{
 		 Response response= noteServices.colorSet(noteId,color,token);
 			

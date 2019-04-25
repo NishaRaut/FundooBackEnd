@@ -17,6 +17,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 import com.bridgelabz.fundoo.user.model.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.hash.HashCode;
 
 
@@ -41,12 +42,8 @@ public class Note {
 	private User user;
 	private boolean active;
 
-	@ManyToMany(cascade = {
-			CascadeType.PERSIST,
-			CascadeType.MERGE
-	})
-	@JoinTable(name = "note_label", joinColumns = @JoinColumn(name = "id"), 
-	inverseJoinColumns = @JoinColumn(name = "labelId"))
+//@JsonIgnore
+	@ManyToMany(mappedBy="Notes")
 	private Set<Label> labels;
 
 	//

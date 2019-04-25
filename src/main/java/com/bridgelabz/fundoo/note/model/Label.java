@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
@@ -28,8 +29,12 @@ public class Label {
 	@JoinColumn(name="User_Id")
 	private User user;
 
+	
+	//@ManyToMany(mappedBy="labels")//,cascade=CascadeType.ALL)
 	@JsonIgnore
-	@ManyToMany(mappedBy="labels")//,cascade=CascadeType.ALL)
+	@ManyToMany()
+	@JoinTable(name = "note_label", joinColumns = @JoinColumn(name = "labelId"), 
+	inverseJoinColumns = @JoinColumn(name = "id"))
 	private Set<Note> Notes;
 
 
