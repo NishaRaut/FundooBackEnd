@@ -1,6 +1,9 @@
 package com.bridgelabz.fundoo.user.controllers;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
@@ -46,6 +49,8 @@ public class UserController {
 	
 	@Autowired
 	UserServices userServices;
+//	String pathlocation= "/home/admin1/Music";
+	private final Path pathlocation=Paths.get("/home/admin1/Music");
 
 	@PostMapping("/register")
 	public ResponseEntity<Response> userRegister(@Valid @RequestBody UserDTO userDTO) throws Exception {
