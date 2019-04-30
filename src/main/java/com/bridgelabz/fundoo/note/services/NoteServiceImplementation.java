@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -130,17 +131,39 @@ public class NoteServiceImplementation implements NoteService {
 		return response;
 	}
 
+//	@Override
+//	public List<Note> getAllNote(String token) {
+//		long userId = userToken.tokenVerify(token);
+//		User user = userRepository.findById(userId)
+//				.orElseThrow(() -> new UserException(environment.getProperty("status.user.errorMessage"),
+//						Integer.parseInt(environment.getProperty("status.user.errorCode"))));
+//		List<Note> allNotes = noteRepository.findByUser(user);
+//		return allNotes;
+//
+//		
+//	}
 	@Override
-	public List<Note> getAllNote(String token) {
+	public List<Note> getAllNote(String token,boolean archived,boolean trashed) {
 		long userId = userToken.tokenVerify(token);
-		User user = userRepository.findById(userId)
-				.orElseThrow(() -> new UserException(environment.getProperty("status.user.errorMessage"),
-						Integer.parseInt(environment.getProperty("status.user.errorCode"))));
-		List<Note> allNotes = noteRepository.findByUser(user);
-		return allNotes;
+		
+		System.out.println("hello");
+		List<Note> notes=noteRepository.findAll().stream()
+				.filter(note-> note.getUser().getId().equals(userId)
+						&& note.isArchive()==archived
+						&& note.isTrash()==trashed)
+				.collect(Collectors.toList());
+
+		//List<Note> sharedNotes = userRepository.findById(userId).get().getCollabnote().stream().collect(Collectors.toList());
+//
+//		List<Note> list = new ArrayList<>();
+//		notes.addAll(notes);
+
+
+		System.out.println(notes);
+		//Response response=Utility.statusResponseNote2(401, environment.getProperty("note.id.sucess"),notes);
+		return notes;
 
 	}
-
 //pendinggggg
 	@Override
 	public Note getNote(String token, Long noteId) {
@@ -151,7 +174,7 @@ public class NoteServiceImplementation implements NoteService {
 		Optional<Note> note = noteRepository.findById(noteId);
 		if (!note.isPresent())
 			throw new NoteException(environment.getProperty("status.note.getting.errorMessage"),
-					Integer.parseInt(environment.getProperty("status.note.errorCode")));
+					Integer.parseInt(environment.getProperty("status.label.errorCode")));
 		return note.get();
 	}
 

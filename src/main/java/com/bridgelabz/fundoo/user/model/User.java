@@ -41,6 +41,15 @@ public class User {
     private LocalDate registeredDate;
     private LocalDate modifiedDate;
     private boolean isVerification;
+    private String Image;
+
+	public String getImage() {
+		return Image;
+	}
+
+	public void setImage(String image) {
+		Image = image;
+	}
 
 	public LocalDate getModifiedDate() {
 		return modifiedDate;

@@ -70,10 +70,10 @@ public class NoteController {
 	}
 
 	@GetMapping("/allNotes")
-	public ResponseEntity<List<Note>> getAllNotes(@RequestHeader("jwt_Token") String token)  {
+	public ResponseEntity<List<Note>> getAllNotes(@RequestHeader("jwt_Token") String token,@RequestParam boolean archived,@RequestParam boolean trashed)  {
 		logger.info("Token:" + token);
 		logger.info("Get all notes:");
-		List<Note> allNotes = noteServices.getAllNote(token);
+		List<Note> allNotes = noteServices.getAllNote(token,archived,trashed);
 		return new ResponseEntity<>(allNotes, HttpStatus.OK);
 
 	}

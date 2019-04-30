@@ -14,6 +14,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.bridgelabz.fundoo.exception.TokenException;
 import com.bridgelabz.fundoo.exception.UserException;
 import com.bridgelabz.fundoo.response.Response;
 import com.bridgelabz.fundoo.response.ResponseToken;
@@ -139,5 +140,21 @@ public class UserServiceImpl implements UserServices {
 		   throw new UserException(environment.getProperty("status.saveError"),Integer.parseInt(environment.getProperty("status.dataSaving.errorCode")));
 		return ResponseInfo.getResponse(Integer.parseInt(environment.getProperty("status.success.code")),environment.getProperty("status.resetPassword.success"));
 	}
+  
 
+	public Response imageUpload(String token,String image)
+	{
+		
+		long userID = userToken.tokenVerify(token);
+		
+		   User user=userRepository.findById(userID)
+				   .orElseThrow(() -> new TokenException("User is not valid.........",400));
+		   
+	 user.setImage(image);
+	 userRepository.save(user);
+	Response response=ResponseInfo.getResponse(102,environment.getProperty("user.upload.message"));
+		
+		return  response;
+	}
+	
 }

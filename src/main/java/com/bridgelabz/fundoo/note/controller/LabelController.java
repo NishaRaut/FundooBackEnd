@@ -10,6 +10,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bridgelabz.fundoo.note.dto.LabelDto;
@@ -39,44 +42,59 @@ public class LabelController {
 //	Response response;
 
 	@PostMapping("/createLabel")
-	public ResponseEntity<Response> create(@RequestBody LabelDto labelDto, @RequestHeader("jwt_Token")  String token) throws Exception
+	public ResponseEntity<Response> create(@RequestBody LabelDto labelDto, @RequestHeader("jwt_Token")  String token)
 	{
 		logger.info("Label DTO:"+labelDto);
 		logger.info("Token:"+token);
 		logger.trace("Create note:");
+	
 		Response response;
-		if(labelDto.getName().equals("") || labelDto.getName() == null)
-		 response = ResponseInfo.getResponse(-499,"label  should not be empty");
-		else
+//		if(labelDto.getName().equals("") || labelDto.getName() == null)
+//		 response = ResponseInfo.getResponse(-499,"label  should not be empty");
+//		else
+	
            response=labelService.createLabel(labelDto, token);
 		return new ResponseEntity<>(response,HttpStatus.OK);
 
 
 	}
 	@PostMapping("/updateLabel/{labelId}")
-	public ResponseEntity<Response> update(@RequestBody LabelDto labelDto,@RequestHeader("jwt_Token") String token,@PathVariable long labelId)throws Exception
+	public ResponseEntity<Response> update(@RequestBody LabelDto labelDto,@RequestHeader("jwt_Token") String token,@PathVariable long labelId)
 	{
 		logger.info("Label DTO:"+labelDto);
 		logger.info("Token:"+token);
 		logger.trace("Update note:");
 		Response response;
-		if(labelDto.getName().equals("") || labelDto.getName() == null)
-			 response = ResponseInfo.getResponse(-499,"label name should not be empty");
-		else
-			response = labelService.updateLabel(labelDto, token, labelId);
+		response = labelService.updateLabel(labelDto, token, labelId);
 		return new ResponseEntity<>(response,HttpStatus.OK);
 	}
 
-	@PutMapping("/deleteLabel")
-	public ResponseEntity<Response> deleteLablePermanently(@RequestBody Long labelId, @RequestHeader("jwt_Token") String token) throws Exception
+//	@DeleteMapping("/deleteLabel/{lableId}")
+//	public ResponseEntity<Response> deleteLablePermanently(@PathVariable(value="labelId")  long labelId, @RequestParam  String token) 
+//	{
+//		logger.info("Label Id:"+labelId);
+//		logger.trace("Delete Label:");
+//		System.out.println(labelId);
+//	    System.out.println("gggggggggggggggggggggggggggggggggggg");
+//		Response response = labelService.deleteLable(labelId, token);
+//		return new ResponseEntity<>(response, HttpStatus.OK);
+//	}
+//	
+
+	
+	@DeleteMapping("/deleteLabel/{labelId}")
+	public ResponseEntity<Response> deleteLablePermanently(@RequestHeader("jwt_Token") String token,@PathVariable(value="labelId") long labelId)
 	{
-		logger.info("Label Id:"+labelId);
-		logger.trace("Delete Label:");
+		
+		logger.info("Token:"+token);
+		logger.trace("Update note:");
 		Response response = labelService.deleteLable(labelId, token);
-		return new ResponseEntity<>(response, HttpStatus.OK);
+		return new ResponseEntity<>(response,HttpStatus.OK);
 	}
+	
+	
 	@GetMapping("/allLabels")
-	public ResponseEntity<List<Label>> getAllLabels(@RequestHeader("jwt_Token") String token) throws Exception
+	public ResponseEntity<List<Label>> getAllLabels(@RequestHeader("jwt_Token") String token)
 	{
 		logger.info("Token:"+token);
 		logger.info("Get all Labels:");

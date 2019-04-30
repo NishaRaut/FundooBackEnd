@@ -7,10 +7,10 @@ import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.UserDTO;
 
 public interface UserServices {
-	public Response register(UserDTO userDTO) throws Exception;
-	public ResponseToken login(LoginDTO loginuser,HttpServletResponse res) throws Exception;
-	public String validateEmailId(String token) throws Exception; 
-	public Response forgotPassword(String email) throws Exception;
-	public Response resetPassword(String token, String password) throws Exception;
-	
+ Response register(UserDTO userDTO) throws Exception;
+ ResponseToken login(LoginDTO loginuser,HttpServletResponse res) throws Exception;
+ String validateEmailId(String token) throws Exception; 
+ Response forgotPassword(String email) throws Exception;
+ Response resetPassword(String token, String password) throws Exception;
+ Response imageUpload(String image,String token);
 }

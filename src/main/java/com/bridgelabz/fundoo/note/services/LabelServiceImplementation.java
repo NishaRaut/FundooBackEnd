@@ -35,7 +35,7 @@ public class LabelServiceImplementation implements LabelService{
 	@Autowired
 	private ModelMapper modelMapper;
 	@Autowired
-	Environment environment;
+	private Environment environment;
 //	@Autowired
 //	Response response;
 	@Autowired
@@ -43,66 +43,73 @@ public class LabelServiceImplementation implements LabelService{
 	
 
 	@Override
-	public Response createLabel(LabelDto labelDto, String token) throws Exception {
-		logger.info("LabelDto:"+labelDto);
+	public Response createLabel(LabelDto labelDto, String token)
+	{
 		logger.info("Token"+token);
 		logger.trace("Create label:");
 		Long userId =userToken.tokenVerify(token);
        
-        User user = userRepository.findById(userId).orElseThrow(() -> new Exception(environment.getProperty("user not found")));
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserException(environment.getProperty("status.user.errorMessage"),
+				Integer.parseInt(environment.getProperty("status.user.errorCode"))));
+    	
 		Label label = modelMapper.map(labelDto,Label.class);
 		label.setCreateStamp(LocalDateTime.now());
-		label.setModifiedStamp(LocalDateTime.now());
+	    label.setModifiedStamp(LocalDateTime.now());
 		label.setUser(user);
 		label = labelRepository.save(label);
-
-		Response response = ResponseInfo.getResponse(Integer.parseInt(environment.getProperty("status.createLabel.successCode")),
-				environment.getProperty("status.createLabel.successMessage"));
+		Response response = ResponseInfo.getResponse(Integer.parseInt(environment.getProperty("status.label.successCode")),
+			environment.getProperty("status.createLabel.successMessage"));
 		return response;
-		
 	}
 
 
 	@Override
-	public Response updateLabel(LabelDto labelDto, String token, long labelId) throws Exception {
+	public Response updateLabel(LabelDto labelDto, String token, long labelId)  {
 		logger.info("LabelDto:"+labelDto);
 		logger.info("Label Id:"+labelId);
 		logger.trace("Update note:");
 		Long userId =userToken.tokenVerify(token);
-	User user = userRepository.findById(userId).orElseThrow(() -> new Exception(environment.getProperty("user not found")));
+	User user = userRepository.findById(userId).orElseThrow(() -> new UserException(environment.getProperty("status.user.errorMessage"),
+			Integer.parseInt(environment.getProperty("status.user.errorCode"))));
+	
 	 if(!user.isVerification())
 		 throw new UserException(environment.getProperty("status.login.unVerifiedUser"),Integer.parseInt(environment.getProperty("status.user.errorCode")));
-	 Label label= labelRepository.findByLableIdAndUser(labelId, user).orElseThrow(() -> new Exception(environment.getProperty("This label does not found")));
+	 Label label= labelRepository.findByLableIdAndUser(labelId, user).orElseThrow(() -> new NoteException(environment.getProperty("status.labeId.errorMessage"),
+				Integer.parseInt(environment.getProperty("status.label.errorCode"))));
 	 modelMapper.map(labelDto,label);
 	 label.setModifiedStamp(LocalDateTime.now());
 		label= labelRepository.save(label);
 		if(label==null)
-		throw new NoteException(environment.getProperty("status.updateLabel.failedMessage"), Integer.parseInt(environment.getProperty("status.updateLabel.failedCode")));
-		Response response = ResponseInfo.getResponse(Integer.parseInt(environment.getProperty("status.updateLabel.successCode")),
+		throw new NoteException(environment.getProperty("status.updateLabel.failedMessage"), Integer.parseInt(environment.getProperty("status.label.errorCode")));
+		Response response = ResponseInfo.getResponse(Integer.parseInt(environment.getProperty("status.label.successCode")),
 				environment.getProperty("status.updateLabel.successMessage"));
 		return response;
 	}
 
 
 	@Override
-	public Response deleteLable(Long labelId, String token) throws Exception {
+	public Response deleteLable(Long labelId , String token) {
+		
 		long userId=userToken.tokenVerify(token);
-		User user = userRepository.findById(userId).orElseThrow(() -> new Exception(environment.getProperty("This User does not found")));
-		if(!user.isVerification())
-			throw new UserException(environment.getProperty("This note does not found"),Integer.parseInt(environment.getProperty("status.user.errorCode")));
-		 labelRepository.deleteById(labelId);
-	    if(labelRepository.findByLableIdAndUser(labelId, user).isPresent())
-	    	throw new NoteException(environment.getProperty("status.label.delete.errorMessage"),Integer.parseInt(environment.getProperty("status.label.delete.errorCode")));
-	    Response response = ResponseInfo.getResponse(Integer.parseInt(environment.getProperty("status.deleteLabel.successCode")),
+		User user = userRepository.findById(userId).orElseThrow(() -> new UserException(environment.getProperty("status.user.errorMessage"),
+				Integer.parseInt(environment.getProperty("status.user.errorCode"))));
+		
+		
+	   Label label=labelRepository.findById(labelId).orElseThrow(() -> new NoteException(environment.getProperty("status.label.missing"), Integer.parseInt(environment.getProperty("status.label.errorCode")))); 
+	   labelRepository.delete(label);
+
+	    Response response = ResponseInfo.getResponse(Integer.parseInt(environment.getProperty("status.label.successCode")),
 		environment.getProperty("status.deleteLabel.successMessage"));
 		return response;
-	}
+	   }
+
 
 
 	@Override
-	public List<Label> getAllLabels(String token) throws Exception {
+	public List<Label> getAllLabels(String token) {
 		long userId=userToken.tokenVerify(token);
-		User user = userRepository.findById(userId).orElseThrow(() -> new Exception(environment.getProperty("This User does not found")));
+		User user = userRepository.findById(userId).orElseThrow(() -> new UserException(environment.getProperty("status.user.errorMessage"),
+				Integer.parseInt(environment.getProperty("status.user.errorCode"))));
 		List<Label> allLabels =labelRepository.findAllByUser(user);
 		return allLabels;
 	}

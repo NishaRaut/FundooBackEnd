@@ -1,4 +1,9 @@
 package com.bridgelabz.fundoo.user.controllers;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.UUID;
+
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -9,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,8 +22,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.bridgelabz.fundoo.response.Response;
 import com.bridgelabz.fundoo.response.ResponseToken;
@@ -88,6 +98,28 @@ public class UserController {
 		Response response = userServices.resetPassword(password.getPassword(), token);
 		return new ResponseEntity<Response>(response, HttpStatus.OK);
 }
+
+	@RequestMapping(value = "user/profileupload", method = RequestMethod.PUT,consumes=MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<Response> imageUploads(@RequestHeader(value="jwt_token") String token,@RequestParam("File") MultipartFile file) throws IOException
+	{
+		logger.info("uploading..");
+		UUID uuid = UUID.randomUUID();
+		
+		System.out.println(uuid.toString());
+		String uuidString = uuid.toString();
+	
+		//File convertFile=new File(this.pathlocation+"/"+file.getOriginalFilename());
+		//System.out.println(convertFile);
+		 Files.copy(file.getInputStream(), this.pathlocation.resolve(uuidString),
+                 StandardCopyOption.REPLACE_EXISTING);
+		Response response=userServices.imageUpload(token,uuid.toString());
+		
+		//Response response=Utility.statusResponse(401, environment.getProperty("note.upload.message"));
+		
+		return  new ResponseEntity<Response>(response,HttpStatus.OK);
+		
+		
+	}
 
 }
 

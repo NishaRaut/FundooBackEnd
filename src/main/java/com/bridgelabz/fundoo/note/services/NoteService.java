@@ -15,7 +15,7 @@ public interface NoteService {
 
 	Response deleteNotePermanently(Long noteId, String token) ;
 
-	List<Note> getAllNote(String token) ;
+	List<Note> getAllNote(String token,boolean archived,boolean trashed) ;
 
 	Note getNote(String token, Long noteId) ;
 
