@@ -13,4 +13,5 @@ public interface UserServices {
  Response forgotPassword(String email) throws Exception;
  Response resetPassword(String token, String password) throws Exception;
  Response imageUpload(String image,String token);
+ String getImage(long id);
 }

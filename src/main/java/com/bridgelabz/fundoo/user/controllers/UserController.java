@@ -1,5 +1,6 @@
 package com.bridgelabz.fundoo.user.controllers;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.Files;
@@ -10,8 +11,8 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-
-
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.slf4j.Logger;
 
 import org.slf4j.LoggerFactory;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.bridgelabz.fundoo.exception.UploadFileNotFoundException;
 import com.bridgelabz.fundoo.response.Response;
 import com.bridgelabz.fundoo.response.ResponseToken;
 
@@ -39,6 +41,7 @@ import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.ResetDTO;
 import com.bridgelabz.fundoo.user.dto.UserDTO;
 import com.bridgelabz.fundoo.user.services.UserServices;
+import com.bridgelabz.fundoo.utility.UserToken;
 
 
 @RestController 
@@ -49,6 +52,8 @@ public class UserController {
 	
 	@Autowired
 	UserServices userServices;
+	@Autowired
+ 	UserToken userToken ;
 //	String pathlocation= "/home/admin1/Music";
 	private final Path pathlocation=Paths.get("/home/admin1/Music");
 
@@ -115,16 +120,43 @@ public class UserController {
 	
 		//File convertFile=new File(this.pathlocation+"/"+file.getOriginalFilename());
 		//System.out.println(convertFile);
+		String test = this.pathlocation.resolve(uuidString).toString();
 		 Files.copy(file.getInputStream(), this.pathlocation.resolve(uuidString),
                  StandardCopyOption.REPLACE_EXISTING);
 		Response response=userServices.imageUpload(token,uuid.toString());
 		
-		//Response response=Utility.statusResponse(401, environment.getProperty("note.upload.message"));
 		
 		return  new ResponseEntity<Response>(response,HttpStatus.OK);
-		
-		
 	}
+	
+	 @GetMapping("/user/getProfile/{token}")
+	    public Resource getImageAll(@PathVariable("token") String token) {
+			System.out.println("@@@@@@@@@@@");
+			System.out.println("TTTTTTTTT:"+token);
+			
+
+	    	long userId = userToken.tokenVerify(token);
+	    	System.out.println("YUUUUUUUUUUUU:"+userId);
+	    	String filename=userServices.getImage(userId);
+	    	
+	    	System.out.println("file name:"+filename);
+	    	  Path file = this.pathlocation.resolve(filename);
+	    	System.out.println(file);
+	        try {
+	          
+	            Resource resource = new UrlResource(file.toUri());
+	            if (resource.exists() || resource.isReadable()) {
+	                return resource;
+	            } else {
+	                throw new UploadFileNotFoundException(
+	                        "Could not read file: " + filename);
+
+	            }
+	        } catch (MalformedURLException e) {
+	            throw new UploadFileNotFoundException("Could not read file: " + filename, e);
+	        }
+	    }
+
 
 }
 

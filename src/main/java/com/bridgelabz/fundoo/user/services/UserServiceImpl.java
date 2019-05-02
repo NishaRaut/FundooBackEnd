@@ -30,24 +30,18 @@ import com.bridgelabz.fundoo.utility.UserToken;
 public class UserServiceImpl implements UserServices {
 	@Autowired
 	private UserRepository userRepository;
-
 	@Autowired
 	private Environment environment;
-
 	@Autowired
 	private PasswordEncoder passwordEncoder;
-
 	@Autowired
 	private ModelMapper modelMapper;
-
-	@Autowired
-	private Response response;
-
 	@Autowired
 	private MailService mailService;
 	@Autowired
 	private UserToken userToken;
-
+	private Response response;
+	
 	@Override
 	public Response register(UserDTO userDTO) {
 		Optional<User> useravailable = userRepository.findByEmail(userDTO.getEmail());
@@ -121,7 +115,7 @@ public class UserServiceImpl implements UserServices {
 		String passwordResetLink = "http://localhost:4200/reset/";
 		passwordResetLink = passwordResetLink + userToken.generateToken(userAvailable.get().getId());
 		mailService.sendEmail(userAvailable.get().getEmail(),"Password Reset Link",passwordResetLink);
-		Response response = ResponseInfo.getResponse(Integer.parseInt(environment.getProperty("status.success.code")),
+		response = ResponseInfo.getResponse(Integer.parseInt(environment.getProperty("status.success.code")),
 				environment.getProperty("status.forgotPassword.success"));
 		return response;
 	}
@@ -152,9 +146,19 @@ public class UserServiceImpl implements UserServices {
 		   
 	 user.setImage(image);
 	 userRepository.save(user);
-	Response response=ResponseInfo.getResponse(102,environment.getProperty("user.upload.message"));
-		
-		return  response;
+     return ResponseInfo.getResponse(102,environment.getProperty("user.upload.message"));
 	}
+	
+	public String getImage(long id)
+	{
+		
+		
+		   User user=userRepository.findById(id)
+				   .orElseThrow(() -> new TokenException( "User is not valid.........",400));
+		
+		return user.getImage();
+	}
+	
+
 	
 }
