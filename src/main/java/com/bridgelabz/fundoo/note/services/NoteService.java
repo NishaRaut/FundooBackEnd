@@ -34,4 +34,8 @@ public interface NoteService {
 	Response ReminderRemove(long noteId,String token)throws ParseException;
 
 	Response colorSet(long noteId, String color, String token);
+	
+	Response addCollaboratedUser(long noteId, String email, String token);
+	
+	Response removeCollaboratedUser(long noteId, String email, String token);
 }

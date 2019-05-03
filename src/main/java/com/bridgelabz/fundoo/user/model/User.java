@@ -2,18 +2,22 @@ package com.bridgelabz.fundoo.user.model;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
+import com.bridgelabz.fundoo.note.model.Label;
 import com.bridgelabz.fundoo.note.model.Note;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 
@@ -41,7 +45,12 @@ public class User {
     private LocalDate registeredDate;
     private LocalDate modifiedDate;
     private boolean isVerification;
-    private String Image;
+
+	private String Image;
+    
+    @JsonIgnore
+	@ManyToMany(mappedBy="collaboratedUsers")
+	private List<Note> collaboratedNotes;
 
 	public String getImage() {
 		return Image;
@@ -86,7 +95,13 @@ public class User {
 	public String getEmail() {
 		return email;
 	}
-	
+	public List<Note> getCollaboratedNotes() {
+		return collaboratedNotes;
+	}
+
+	public void setCollaboratedNotes(List<Note> collaboratedNotes) {
+		this.collaboratedNotes = collaboratedNotes;
+	}
 	
 	@Override
 	public String toString() {

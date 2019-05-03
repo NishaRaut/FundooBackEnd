@@ -51,8 +51,8 @@ public class NoteServiceImplementation implements NoteService {
 
 	@Autowired
 	private Environment environment;
-//	@Autowired
-//	Response response;
+	//	@Autowired
+	//	Response response;
 
 	@Autowired
 	private UserToken userToken;
@@ -91,15 +91,15 @@ public class NoteServiceImplementation implements NoteService {
 				.orElseThrow(() -> new UserException(environment.getProperty("status.user.errorMessage"),
 						Integer.parseInt(environment.getProperty("status.user.errorCode"))));
 
-//				if (!user.isVerification())
-//			throw new UserException(environment.getProperty("status.login.unVerifiedUser"),
-//					Integer.parseInt(environment.getProperty("status.user.errorCode")));
+		//				if (!user.isVerification())
+		//			throw new UserException(environment.getProperty("status.login.unVerifiedUser"),
+		//					Integer.parseInt(environment.getProperty("status.user.errorCode")));
 		Note note = noteRepository.findById(noteId)
 				.orElseThrow(() -> new NoteException(environment.getProperty("status.noteId.errorMessage"),
 						Integer.parseInt(environment.getProperty("status.note.errorCode"))));
-		
-		
-		
+
+
+
 		modelMapper.map(noteDto, note);
 		note.setModifyDate(LocalDateTime.now());
 		note = noteRepository.save(note);
@@ -118,9 +118,9 @@ public class NoteServiceImplementation implements NoteService {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new UserException(environment.getProperty("status.user.errorMessage"),
 						Integer.parseInt(environment.getProperty("status.user.errorCode"))));
-//		if (!user.isVerification())
-//			throw new UserException(environment.getProperty("status.user.errorMessage"),
-//					Integer.parseInt(environment.getProperty("status.user.errorCode")));
+		//		if (!user.isVerification())
+		//			throw new UserException(environment.getProperty("status.user.errorMessage"),
+		//					Integer.parseInt(environment.getProperty("status.user.errorCode")));
 		Note note = noteRepository.findById(noteId)
 				.orElseThrow(() -> new NoteException(environment.getProperty("status.noteId.errorMessage"),
 						Integer.parseInt(environment.getProperty("status.note.errorCode"))));
@@ -131,21 +131,21 @@ public class NoteServiceImplementation implements NoteService {
 		return response;
 	}
 
-//	@Override
-//	public List<Note> getAllNote(String token) {
-//		long userId = userToken.tokenVerify(token);
-//		User user = userRepository.findById(userId)
-//				.orElseThrow(() -> new UserException(environment.getProperty("status.user.errorMessage"),
-//						Integer.parseInt(environment.getProperty("status.user.errorCode"))));
-//		List<Note> allNotes = noteRepository.findByUser(user);
-//		return allNotes;
-//
-//		
-//	}
+	//	@Override
+	//	public List<Note> getAllNote(String token) {
+	//		long userId = userToken.tokenVerify(token);
+	//		User user = userRepository.findById(userId)
+	//				.orElseThrow(() -> new UserException(environment.getProperty("status.user.errorMessage"),
+	//						Integer.parseInt(environment.getProperty("status.user.errorCode"))));
+	//		List<Note> allNotes = noteRepository.findByUser(user);
+	//		return allNotes;
+	//
+	//		
+	//	}
 	@Override
 	public List<Note> getAllNote(String token,boolean archived,boolean trashed) {
 		long userId = userToken.tokenVerify(token);
-		
+
 		System.out.println("hello");
 		List<Note> notes=noteRepository.findAll().stream()
 				.filter(note-> note.getUser().getId().equals(userId)
@@ -154,9 +154,9 @@ public class NoteServiceImplementation implements NoteService {
 				.collect(Collectors.toList());
 
 		//List<Note> sharedNotes = userRepository.findById(userId).get().getCollabnote().stream().collect(Collectors.toList());
-//
-//		List<Note> list = new ArrayList<>();
-//		notes.addAll(notes);
+		//
+		//		List<Note> list = new ArrayList<>();
+		//		notes.addAll(notes);
 
 
 		System.out.println(notes);
@@ -164,7 +164,7 @@ public class NoteServiceImplementation implements NoteService {
 		return notes;
 
 	}
-//pendinggggg
+	//pendinggggg
 	@Override
 	public Note getNote(String token, Long noteId) {
 		long userId = userToken.tokenVerify(token);
@@ -186,9 +186,9 @@ public class NoteServiceImplementation implements NoteService {
 		Note note = noteRepository.findById(noteId)
 				.orElseThrow(() -> new NoteException(environment.getProperty("status.noteId.errorMessage"),
 						Integer.parseInt(environment.getProperty("status.note.errorCode"))));
-//		if (note.getUser().getId() != userId) {
-//			throw new Exception("User not a match");
-//		}
+		//		if (note.getUser().getId() != userId) {
+		//			throw new Exception("User not a match");
+		//		}
 
 		System.out.println("pin34");
 		if (note.isPinned()) {
@@ -212,9 +212,9 @@ public class NoteServiceImplementation implements NoteService {
 		Note note = noteRepository.findById(noteId)
 				.orElseThrow(() -> new NoteException(environment.getProperty("status.noteId.errorMessage"),
 						Integer.parseInt(environment.getProperty("status.note.errorCode"))));
-//		if (note.getUser().getId() != userId) {
-//			throw new Exception("User not a match");
-//		}
+		//		if (note.getUser().getId() != userId) {
+		//			throw new Exception("User not a match");
+		//		}
 		if (note.isTrash()) {
 			note.setTrash(false);
 			response = ResponseInfo.getResponse(Integer.parseInt(environment.getProperty("status.note.false")),
@@ -337,7 +337,7 @@ public class NoteServiceImplementation implements NoteService {
 						Integer.parseInt(environment.getProperty("status.user.errorCode"))));
 
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-		
+
 		Note note = noteRepository.findById(noteId)
 				.orElseThrow(() -> new NoteException(environment.getProperty("status.noteId.errorMessage"),
 						Integer.parseInt(environment.getProperty("status.note.errorCode"))));
@@ -361,5 +361,80 @@ public class NoteServiceImplementation implements NoteService {
 				environment.getProperty("status.color.successMessage"));
 		return response;
 	}
+	@Override
+	public Response addCollaboratedUser(long noteId, String email, String token) {
+		Response response;
+		long userId = userToken.tokenVerify(token);
+		User loggedInUser = userRepository.findById(userId)
+				.orElseThrow(() -> new UserException(environment.getProperty("status.user.errorMessage"),
+						Integer.parseInt(environment.getProperty("status.user.errorCode"))));
+		Note note = noteRepository.findById(noteId).orElseThrow(() -> new NoteException(environment.getProperty("status.note.getting.errorMessage"),
+				Integer.parseInt(environment.getProperty("status.label.errorCode"))));
+		User userToCollaborate = userRepository.findByEmail(email)
+				.orElseThrow(() -> new UserException(environment.getProperty("status.user.errorMessage"),
+						Integer.parseInt(environment.getProperty("status.user.errorCode"))));
+		if(note.getCollaboratedUsers().contains(userToCollaborate))
+			response = ResponseInfo.getResponse(Integer.parseInt(environment.getProperty("status.mail.failedcode")),
+					environment.getProperty("status.mail.presentmsg"));
+		else {
+			note.getCollaboratedUsers().add(userToCollaborate);
+			userToCollaborate.getCollaboratedNotes().add(note);
+			noteRepository.save(note);
+			userRepository.save(userToCollaborate);
+			response = ResponseInfo.getResponse(Integer.parseInt(environment.getProperty("status.userNote.successcode")),
+					environment.getProperty("status.userAddToNote.successmsg"));
+		}	
+		return response;
+	}
 
+	@Override
+	public Response removeCollaboratedUser(long noteId, String email, String token) {
+		Response response;
+		long userId = userToken.tokenVerify(token);
+		User loggedInUser = userRepository.findById(userId)
+				.orElseThrow(() -> new UserException(environment.getProperty("status.user.errorMessage"),
+						Integer.parseInt(environment.getProperty("status.user.errorCode"))));
+		Note note = noteRepository.findById(noteId).orElseThrow(() -> new NoteException(environment.getProperty("status.note.getting.errorMessage"),
+				Integer.parseInt(environment.getProperty("status.label.errorCode"))));
+		User userToRemove = userRepository.findByEmail(email)
+				.orElseThrow(() -> new UserException(environment.getProperty("status.user.errorMessage"),
+						Integer.parseInt(environment.getProperty("status.user.errorCode"))));
+		if(!note.getCollaboratedUsers().contains(userToRemove))
+			response = ResponseInfo.getResponse(Integer.parseInt(environment.getProperty("status.mail.failedcode")),
+					environment.getProperty("status.user.notExist"));
+		else {
+			note.getCollaboratedUsers().remove(userToRemove);
+			userToRemove.getCollaboratedNotes().remove(note);
+			noteRepository.save(note);
+			userRepository.save(userToRemove);
+			response = ResponseInfo.getResponse(Integer.parseInt(environment.getProperty("status.userNote.successcode")),
+					environment.getProperty("status.userRemoveToNote.successmsg"));
+		}	
+		return response;
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

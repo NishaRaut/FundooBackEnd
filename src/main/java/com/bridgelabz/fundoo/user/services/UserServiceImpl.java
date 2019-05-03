@@ -1,19 +1,15 @@
 package com.bridgelabz.fundoo.user.services;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Optional;
-
 import javax.servlet.http.HttpServletResponse;
-
 import org.modelmapper.ModelMapper;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import com.bridgelabz.fundoo.exception.TokenException;
 import com.bridgelabz.fundoo.exception.UserException;
 import com.bridgelabz.fundoo.response.Response;
@@ -22,6 +18,7 @@ import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.UserDTO;
 import com.bridgelabz.fundoo.user.model.User;
 import com.bridgelabz.fundoo.user.repository.UserRepository;
+import com.bridgelabz.fundoo.utility.RabbitMQService;
 import com.bridgelabz.fundoo.utility.ResponseInfo;
 import com.bridgelabz.fundoo.utility.UserToken;
 
@@ -37,11 +34,11 @@ public class UserServiceImpl implements UserServices {
 	@Autowired
 	private ModelMapper modelMapper;
 	@Autowired
-	private MailService mailService;
+	private RabbitMQService rabbitMQService;
 	@Autowired
 	private UserToken userToken;
 	private Response response;
-	
+
 	@Override
 	public Response register(UserDTO userDTO) {
 		Optional<User> useravailable = userRepository.findByEmail(userDTO.getEmail());
@@ -61,19 +58,26 @@ public class UserServiceImpl implements UserServices {
 		user = userRepository.save(user);
 		try {
 			user = userRepository.save(user);
-			}
-	catch(Exception e)
+		}
+		catch(Exception e)
 		{
 			throw new UserException(environment.getProperty("status.saveError"),
 					Integer.parseInt(environment.getProperty("status.dataSaving.errorCode")));
 		}
 		String userActivationLink = "http://localhost:8080/userActivation/";
 		userActivationLink = userActivationLink + userToken.generateToken(user.getId());
-		mailService.sendEmail(user.getEmail(),"user activation link",userActivationLink);
+		//
+		SimpleMailMessage mail = new SimpleMailMessage();
+		mail.setTo(user.getEmail());
+		mail.setFrom(environment.getProperty("spring.mail.username"));
+		mail.setSubject("user activation link");
+		mail.setText(userActivationLink);
+		rabbitMQService.publishUserMail(mail);
+		//mailService.sendEmail(user.getEmail(),"user activation link",userActivationLink);
 		response = ResponseInfo.getResponse(Integer.parseInt(environment.getProperty("status.success.code")),
 				environment.getProperty("status.register.success"));
 		return response;
-	
+
 	}
 
 	@Override
@@ -114,7 +118,15 @@ public class UserServiceImpl implements UserServices {
 		}
 		String passwordResetLink = "http://localhost:4200/reset/";
 		passwordResetLink = passwordResetLink + userToken.generateToken(userAvailable.get().getId());
-		mailService.sendEmail(userAvailable.get().getEmail(),"Password Reset Link",passwordResetLink);
+
+		SimpleMailMessage mail = new SimpleMailMessage();
+		mail.setTo(userAvailable.get().getEmail());
+		mail.setFrom(environment.getProperty("spring.mail.username"));
+		mail.setSubject("Password Reset Link");
+		mail.setText(passwordResetLink);
+		rabbitMQService.publishUserMail(mail);
+
+		//mailService.sendEmail(userAvailable.get().getEmail(),"Password Reset Link",passwordResetLink);
 		response = ResponseInfo.getResponse(Integer.parseInt(environment.getProperty("status.success.code")),
 				environment.getProperty("status.forgotPassword.success"));
 		return response;
@@ -126,39 +138,39 @@ public class UserServiceImpl implements UserServices {
 		Optional<User> user = userRepository.findById(id);
 		if(!user.isPresent())
 			throw new UserException(environment.getProperty("status.user.invalidUser"), Integer.parseInt(environment.getProperty("status.user.errorCode")));
-		
+
 		user.get().setPassword(passwordEncoder.encode(newPassword));
 		LocalDate today = LocalDate.now();
 		user.get().setModifiedDate(today);
 		if(userRepository.save(user.get()) == null)
-		   throw new UserException(environment.getProperty("status.saveError"),Integer.parseInt(environment.getProperty("status.dataSaving.errorCode")));
+			throw new UserException(environment.getProperty("status.saveError"),Integer.parseInt(environment.getProperty("status.dataSaving.errorCode")));
 		return ResponseInfo.getResponse(Integer.parseInt(environment.getProperty("status.success.code")),environment.getProperty("status.resetPassword.success"));
 	}
-  
+
 
 	public Response imageUpload(String token,String image)
 	{
-		
+
 		long userID = userToken.tokenVerify(token);
-		
-		   User user=userRepository.findById(userID)
-				   .orElseThrow(() -> new TokenException("User is not valid.........",400));
-		   
-	 user.setImage(image);
-	 userRepository.save(user);
-     return ResponseInfo.getResponse(102,environment.getProperty("user.upload.message"));
+
+		User user=userRepository.findById(userID)
+				.orElseThrow(() -> new TokenException("User is not valid.........",400));
+
+		user.setImage(image);
+		userRepository.save(user);
+		return ResponseInfo.getResponse(102,environment.getProperty("user.upload.message"));
 	}
-	
+
 	public String getImage(long id)
 	{
-		
-		
-		   User user=userRepository.findById(id)
-				   .orElseThrow(() -> new TokenException( "User is not valid.........",400));
-		
+
+
+		User user=userRepository.findById(id)
+				.orElseThrow(() -> new TokenException( "User is not valid.........",400));
+
 		return user.getImage();
 	}
-	
 
-	
+
+
 }

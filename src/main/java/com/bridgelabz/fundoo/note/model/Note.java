@@ -4,10 +4,12 @@ package com.bridgelabz.fundoo.note.model;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -42,10 +44,15 @@ public class Note {
 	private User user;
 	private boolean active;
 
-//@JsonIgnore
+    //@JsonIgnore
 	@ManyToMany(mappedBy="Notes")
 	private Set<Label> labels;
-
+    
+	@JsonIgnore
+	@ManyToMany(fetch=FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+	@JoinTable(name = "note_user", joinColumns = @JoinColumn(name = "noteId"), 
+	inverseJoinColumns = @JoinColumn(name = "userId"))
+	private List<User> collaboratedUsers;
 	//
 	/**
 	 * default constructor
@@ -53,6 +60,14 @@ public class Note {
 	public Note() {
 		super();
 	}
+	
+	public List<User> getCollaboratedUsers() {
+		return collaboratedUsers;
+	}
+	public void setCollaboratedUsers(List<User> collaboratedUsers) {
+		this.collaboratedUsers = collaboratedUsers;
+	}
+	
 	public void setId(long id) {
 		this.id = id;
 	}

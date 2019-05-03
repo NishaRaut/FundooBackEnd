@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bridgelabz.fundoo.note.dto.CollaboratorDTO;
 import com.bridgelabz.fundoo.note.dto.LabelDto;
 import com.bridgelabz.fundoo.note.dto.NoteDto;
 import com.bridgelabz.fundoo.note.model.Note;
@@ -62,7 +63,7 @@ public class NoteController {
 
 	@DeleteMapping("/deleteNote/{noteId}")
 	public ResponseEntity<Response> deleteNotePermanently(@PathVariable Long noteId, @RequestHeader("jwt_Token") String token)
-		{
+	{
 		logger.info("Note Id:" + noteId);
 		logger.trace("Delete note:");
 		Response response = noteServices.deleteNotePermanently(noteId, token);
@@ -89,7 +90,7 @@ public class NoteController {
 
 	@PutMapping("/pinNote/{noteId}")
 	public ResponseEntity<Response> pinnedUnpinned(@RequestHeader("jwt_Token") String token, @PathVariable Long noteId)
-			 {
+	{
 		logger.info("Token:" + token);
 		logger.info("Note Id:" + noteId);
 		logger.trace("Pinned/Unpinned by id:");
@@ -101,7 +102,7 @@ public class NoteController {
 
 	@PutMapping("/trashNote/{noteId}")
 	public ResponseEntity<Response> trashedUntrashed(@RequestHeader("jwt_Token") String token, @PathVariable Long noteId)
-			 {
+	{
 		logger.info("Token:" + token);
 		logger.info("Note Id:" + noteId);
 		logger.trace("Trashed/Untrashed by id:");
@@ -112,7 +113,7 @@ public class NoteController {
 
 	@PutMapping("/archiveNote/{noteId}")
 	public ResponseEntity<Response> archiveUnarchive(@RequestHeader("jwt_Token") String token, @PathVariable Long noteId)
-			 {
+	{
 		logger.info("Token:" + token);
 		logger.info("Note Id:" + noteId);
 		logger.trace("Trashed/Untrashed by id:");
@@ -128,10 +129,10 @@ public class NoteController {
 		logger.info("token: " + token);
 		logger.trace("add label to note");
 		Response response;
-//		if (labelDTO.getName().equals("") || labelDTO.getName() == null)
-//			response = ResponseInfo.getResponse(-800, "label can't not be empty");
-//		else
-			response = noteServices.addLabelToNote(token, noteId, labelId);
+		//		if (labelDTO.getName().equals("") || labelDTO.getName() == null)
+		//			response = ResponseInfo.getResponse(-800, "label can't not be empty");
+		//		else
+		response = noteServices.addLabelToNote(token, noteId, labelId);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
@@ -141,37 +142,51 @@ public class NoteController {
 		logger.info("token: " + token);
 		logger.trace("remove label to note");
 		Response response;
-//		if (labelDTO.getName().equals("") || labelDTO.getName() == null)
-//			response = ResponseInfo.getResponse(-800, "label can't not be empty");
-//		else
-			response = noteServices.removeLabelFromNote(token, noteId, labelId);
+		//		if (labelDTO.getName().equals("") || labelDTO.getName() == null)
+		//			response = ResponseInfo.getResponse(-800, "label can't not be empty");
+		//		else
+		response = noteServices.removeLabelFromNote(token, noteId, labelId);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	@PostMapping("/notes/{id}")
 	public ResponseEntity<Response> addReminder(@PathVariable(value="id") long noteId,@RequestHeader("jwt_Token") String token,@RequestParam String time)throws ParseException  
 
-       {
-			
+	{
+
 		System.out.println("Note Created");
-	    Response response= noteServices.ReminderSet(noteId,time,token);
-	    return new ResponseEntity<Response>(response,HttpStatus.OK);
-	     
+		Response response= noteServices.ReminderSet(noteId,time,token);
+		return new ResponseEntity<Response>(response,HttpStatus.OK);
+
 	}
 	@PostMapping("/notes/remove/{id}")
 	public ResponseEntity<Response> removeReminder(@PathVariable(value="id") long noteId,@RequestHeader("jwt_Token") String token) throws ParseException 
 
-       {
-			
+	{
+
 		System.out.println("Note Created");
-	    Response response= noteServices.ReminderRemove(noteId,token);
-		
-	     return new ResponseEntity<Response>(response,HttpStatus.OK);	
+		Response response= noteServices.ReminderRemove(noteId,token);
+
+		return new ResponseEntity<Response>(response,HttpStatus.OK);	
 	}
 	@PostMapping("/notes/color/{id}")
 	public ResponseEntity<Response> noteColor(@PathVariable(value="id") long noteId,@RequestParam String color,@RequestHeader("jwt_Token") String token)
 	{
-		 Response response= noteServices.colorSet(noteId,color,token);
-			
-	     return new ResponseEntity<Response>(response,HttpStatus.OK);	
+		Response response= noteServices.colorSet(noteId,color,token);
+
+		return new ResponseEntity<Response>(response,HttpStatus.OK);	
+	}
+
+	@PutMapping("/notes/addcollaborator/{id}")
+	public ResponseEntity<Response> addCollaboratedUser(@PathVariable(value="id") long noteId,@RequestHeader("jwt_Token") String token, @RequestBody CollaboratorDTO collaboratorDTO)
+	{
+		Response response= noteServices.addCollaboratedUser(noteId, collaboratorDTO.getEmail(), token);
+		return new ResponseEntity<Response>(response,HttpStatus.OK);	
+	}
+
+	@PutMapping("/notes/removecollaborator/{id}")
+	public ResponseEntity<Response> removeCollaboratedUser(@PathVariable(value="id") long noteId,@RequestHeader("jwt_Token") String token, @RequestBody CollaboratorDTO collaboratorDTO)
+	{
+		Response response= noteServices.removeCollaboratedUser(noteId, collaboratorDTO.getEmail(), token);
+		return new ResponseEntity<Response>(response,HttpStatus.OK);	
 	}
 }

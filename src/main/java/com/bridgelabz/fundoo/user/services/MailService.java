@@ -17,7 +17,17 @@ public class MailService {
 	@Autowired
 	Environment environment;
 	
-	public void sendEmail(String to, String subject, String message) {
+	public void sendEmail(SimpleMailMessage mail) {
+		try {
+		javaMailSender.send(mail);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+		}
+	}	
+	
+/*	public void sendEmail(String to, String subject, String message) {
 		SimpleMailMessage mail = new SimpleMailMessage();
 		mail.setTo(to);
 		mail.setFrom(environment.getProperty("spring.mail.username"));
@@ -30,5 +40,5 @@ public class MailService {
 			e.printStackTrace();
 			System.out.println(e.getMessage());
 		}
-	}	
+	}*/	
 }

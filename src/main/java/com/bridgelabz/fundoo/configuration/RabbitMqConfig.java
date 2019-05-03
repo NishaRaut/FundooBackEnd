@@ -23,15 +23,13 @@ public class RabbitMqConfig {
 		return new DirectExchange(exchange);
 	}
 
-	@Bean(name = "userQueue")
+	@Bean
 	Queue userQueue() {
-		System.out.println("userQueue");
-		return new Queue(userQueue, false);
+		return new Queue(userQueue, true);
 	}
 
 	@Bean
 	Binding userQueueBinding(Queue userQueue, DirectExchange exchange) {
-		System.out.println("userQueueBinding");
 		return BindingBuilder.bind(userQueue).to(exchange).with(userRoutingKey);
 	}
 }
