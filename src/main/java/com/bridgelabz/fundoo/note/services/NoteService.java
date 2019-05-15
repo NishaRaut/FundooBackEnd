@@ -7,6 +7,7 @@ import com.bridgelabz.fundoo.note.dto.LabelDto;
 import com.bridgelabz.fundoo.note.dto.NoteDto;
 import com.bridgelabz.fundoo.note.model.Note;
 import com.bridgelabz.fundoo.response.Response;
+import com.bridgelabz.fundoo.user.model.User;
 
 public interface NoteService {
 	Response create(NoteDto noteDto, String token) ;
@@ -38,4 +39,8 @@ public interface NoteService {
 	Response addCollaboratedUser(long noteId, String email, String token);
 	
 	Response removeCollaboratedUser(long noteId, String email, String token);
+	
+	List<User> getCollabNote(String token,long noteId);
+	
+    List<Note> searchNote(String query,String token);
 }

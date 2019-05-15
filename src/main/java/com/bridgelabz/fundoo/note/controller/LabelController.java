@@ -52,7 +52,7 @@ public class LabelController {
 //		if(labelDto.getName().equals("") || labelDto.getName() == null)
 //		 response = ResponseInfo.getResponse(-499,"label  should not be empty");
 //		else
-	
+	System.out.println("hello");
            response=labelService.createLabel(labelDto, token);
 		return new ResponseEntity<>(response,HttpStatus.OK);
 

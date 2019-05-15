@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.transaction.Transactional;
+
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +20,8 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import com.bridgelabz.fundoo.elasticserach.ElasticSearch;
+import com.bridgelabz.fundoo.elasticserach.ElasticsearchImlementation;
 import com.bridgelabz.fundoo.exception.NoteException;
 import com.bridgelabz.fundoo.exception.UserException;
 import com.bridgelabz.fundoo.note.dto.LabelDto;
@@ -29,12 +33,16 @@ import com.bridgelabz.fundoo.note.repository.NoteRepository;
 import com.bridgelabz.fundoo.response.Response;
 import com.bridgelabz.fundoo.user.model.User;
 import com.bridgelabz.fundoo.user.repository.UserRepository;
+import com.bridgelabz.fundoo.utility.NoteContainer;
+import com.bridgelabz.fundoo.utility.NoteOperation;
+import com.bridgelabz.fundoo.utility.RabbitMQServiceImpl;
 import com.bridgelabz.fundoo.utility.ResponseInfo;
 import com.bridgelabz.fundoo.utility.UserToken;
 
 @SuppressWarnings("unused")
 @Service
 @PropertySource("classpath:message.properties")
+
 public class NoteServiceImplementation implements NoteService {
 
 	public static final Logger logger = LoggerFactory.getLogger("NoteServicesImplementation.class");
@@ -53,7 +61,11 @@ public class NoteServiceImplementation implements NoteService {
 	private Environment environment;
 	//	@Autowired
 	//	Response response;
+	@Autowired
+	private ElasticsearchImlementation elasticSearch;
 
+     @Autowired
+     private RabbitMQServiceImpl producer;
 	@Autowired
 	private UserToken userToken;
 
@@ -72,6 +84,12 @@ public class NoteServiceImplementation implements NoteService {
 		note.setCreateDate(LocalDateTime.now());
 		note.setModifyDate(LocalDateTime.now());
 		note = noteRepository.save(note);
+		
+		NoteContainer noteContainer=new NoteContainer();
+		noteContainer.setNote(note);
+		noteContainer.setNoteoperation(NoteOperation.CREATE);
+		producer.sendNote(noteContainer);
+		System.out.println("welcome");
 		if (note == null) {
 			throw new NoteException(environment.getProperty("status.note.errorCode"),
 					Integer.parseInt(environment.getProperty("status.note.errorMessage")));
@@ -103,6 +121,11 @@ public class NoteServiceImplementation implements NoteService {
 		modelMapper.map(noteDto, note);
 		note.setModifyDate(LocalDateTime.now());
 		note = noteRepository.save(note);
+		NoteContainer noteContainer=new NoteContainer();
+		noteContainer.setNote(note);
+		noteContainer.setNoteoperation(NoteOperation.UPDATE);
+		producer.sendNote(noteContainer);
+	
 		if (note == null)
 			throw new NoteException(environment.getProperty("status.note.errorCode"),
 					Integer.parseInt(environment.getProperty("status.note.update.errorMessage")));
@@ -125,6 +148,11 @@ public class NoteServiceImplementation implements NoteService {
 				.orElseThrow(() -> new NoteException(environment.getProperty("status.noteId.errorMessage"),
 						Integer.parseInt(environment.getProperty("status.note.errorCode"))));
 		noteRepository.delete(note);
+		NoteContainer noteContainer=new NoteContainer();
+		noteContainer.setNote(note);
+		noteContainer.setNoteoperation(NoteOperation.DELETE);
+		producer.sendNote(noteContainer);
+
 		Response response = ResponseInfo.getResponse(
 				Integer.parseInt(environment.getProperty("status.note.successCode")),
 				environment.getProperty("status.deleteNote.successMessage"));
@@ -231,7 +259,8 @@ public class NoteServiceImplementation implements NoteService {
 	@Override
 	public Response archiveUnarchive(String token, Long noteId) {
 		Response response;
-		// Long userId = userToken.tokenVerify(token);
+		 //Long userId = userToken.tokenVerify(token);
+		//Long userId = userToken.tokenVerify(token);
 		Note note = noteRepository.findById(noteId)
 				.orElseThrow(() -> new NoteException(environment.getProperty("status.noteId.errorMessage"),
 						Integer.parseInt(environment.getProperty("status.note.errorCode"))));
@@ -411,6 +440,34 @@ public class NoteServiceImplementation implements NoteService {
 					environment.getProperty("status.userRemoveToNote.successmsg"));
 		}	
 		return response;
+	}
+
+	@Override
+	public List<User> getCollabNote(String token, long noteId) {
+		long userId=userToken.tokenVerify(token);
+		Note note=noteRepository.findById(noteId).orElseThrow(() -> new NoteException(environment.getProperty("status.noteId.errorMessage"),
+				Integer.parseInt(environment.getProperty("status.note.errorCode"))));
+		User user=userRepository.findById(userId).orElseThrow(()->
+		new UserException("This Email Id Not Exist",401));
+
+		if(user.getId().equals(userId))
+		{
+			List<User> userinfo=note.getCollaboratedUsers().stream().collect(Collectors.toList());
+			//user.setCollabnote(collabnote);	
+			return userinfo;
+
+		}
+
+		return null;
+}
+
+	@Override
+	public List<Note> searchNote(String query,String token) {
+		// TODO Auto-generated method stub
+		long userId=userToken.tokenVerify(token);
+		List<Note> data=elasticSearch.searchData(query,userId);
+		System.out.println("dataata"+data);
+		return data;
 	}
 }
 

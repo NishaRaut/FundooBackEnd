@@ -1,9 +1,12 @@
 package com.bridgelabz.fundoo.response;
 
+import com.bridgelabz.fundoo.user.dto.UserDTO;
+
 public class ResponseToken {
 	private String token;
 	private int statuscode;
 	private String statusmessage;
+	private UserDTO userDto;
 	public String getToken() {
 		return token;
 	}
@@ -22,4 +25,11 @@ public class ResponseToken {
 	public void setStatusmessage(String statusmessage) {
 		this.statusmessage = statusmessage;
 	}
+	public UserDTO getUserDto() {
+		return userDto;
+	}
+	public void setUserDto(UserDTO userDto) {
+		this.userDto = userDto;
+	}
+	
 }

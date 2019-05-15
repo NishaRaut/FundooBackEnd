@@ -2,6 +2,7 @@ package com.bridgelabz.fundoo.utility;
 
 import com.bridgelabz.fundoo.response.Response;
 import com.bridgelabz.fundoo.response.ResponseToken;
+import com.bridgelabz.fundoo.user.dto.UserDTO;
 
 public class ResponseInfo {
 /**
@@ -24,11 +25,12 @@ public static Response getResponse(int statusCode, String statusMessage )
  * @param statusMessage
  * @return
  */
-public static ResponseToken tokenStatusInfo(int statusCode, String statusMessage, String token)
+public static ResponseToken tokenStatusInfo(int statusCode, String statusMessage, String token,UserDTO userDto)
 {   ResponseToken response = new ResponseToken();
     response.setStatuscode(statusCode);
     response.setStatusmessage(statusMessage);
     response.setToken(token);
+    response.setUserDto(userDto);
     
 	return response;
 }

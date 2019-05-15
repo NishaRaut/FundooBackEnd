@@ -20,13 +20,17 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bridgelabz.fundoo.elasticserach.ElasticSearch;
+import com.bridgelabz.fundoo.elasticserach.ElasticsearchImlementation;
 import com.bridgelabz.fundoo.note.dto.CollaboratorDTO;
 import com.bridgelabz.fundoo.note.dto.LabelDto;
 import com.bridgelabz.fundoo.note.dto.NoteDto;
 import com.bridgelabz.fundoo.note.model.Note;
 import com.bridgelabz.fundoo.note.services.NoteService;
 import com.bridgelabz.fundoo.response.Response;
+import com.bridgelabz.fundoo.user.model.User;
 import com.bridgelabz.fundoo.utility.ResponseInfo;
+import com.bridgelabz.fundoo.utility.UserToken;
 
 @RestController
 @CrossOrigin(origins="http://localhost:4200")
@@ -37,6 +41,11 @@ public class NoteController {
 	private NoteService noteServices;
 	@Autowired
 	Environment environment;
+//	@Autowired
+//	ElasticsearchImlementation elasticSearch;
+//
+//	@Autowired
+//	private UserToken userToken;
 
 	/*
 	 * @Autowired Response response;
@@ -177,16 +186,42 @@ public class NoteController {
 	}
 
 	@PutMapping("/notes/addcollaborator/{id}")
-	public ResponseEntity<Response> addCollaboratedUser(@PathVariable(value="id") long noteId,@RequestHeader("jwt_Token") String token, @RequestBody CollaboratorDTO collaboratorDTO)
+	public ResponseEntity<Response> addCollaboratedUser(@PathVariable(value="id") long noteId,@RequestParam String email,@RequestHeader("jwt_Token") String token)
 	{
-		Response response= noteServices.addCollaboratedUser(noteId, collaboratorDTO.getEmail(), token);
+		Response response= noteServices.addCollaboratedUser(noteId, email, token);
 		return new ResponseEntity<Response>(response,HttpStatus.OK);	
 	}
 
-	@PutMapping("/notes/removecollaborator/{id}")
-	public ResponseEntity<Response> removeCollaboratedUser(@PathVariable(value="id") long noteId,@RequestHeader("jwt_Token") String token, @RequestBody CollaboratorDTO collaboratorDTO)
+	@GetMapping("/notes/removecollaborator/{id}")
+	public ResponseEntity<Response> removeCollaboratedUser(@RequestParam(value="id") long noteId,@RequestHeader("jwt_Token") String token, @RequestParam String email)
 	{
-		Response response= noteServices.removeCollaboratedUser(noteId, collaboratorDTO.getEmail(), token);
+		Response response= noteServices.removeCollaboratedUser(noteId, email, token);
 		return new ResponseEntity<Response>(response,HttpStatus.OK);	
 	}
+	@GetMapping("/note/list/collab")
+	public List<User> getNote(@RequestHeader(value="jwt_token") String token,@RequestParam long noteId)
+	{
+		
+		List<User> response=noteServices.getCollabNote(token,noteId);
+		 System.out.println(response);
+		
+	     return response;
+		 
+	}
+	
+	@GetMapping("/note/search")
+	public List<Note> getNote(@RequestParam String query,@RequestHeader(value="jwt_token") String token)
+	{
+		  System.out.println("hiii");
+		List<Note> response=noteServices.searchNote(query,token);
+		
+	  System.out.println(response);
+
+	  System.out.println("hiii");
+			return response;
+
+		 
+	}
+
+
 }

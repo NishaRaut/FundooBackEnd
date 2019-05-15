@@ -45,14 +45,16 @@ public class LabelServiceImplementation implements LabelService{
 	@Override
 	public Response createLabel(LabelDto labelDto, String token)
 	{
+		System.out.println("fgfgfd");
 		logger.info("Token"+token);
 		logger.trace("Create label:");
 		Long userId =userToken.tokenVerify(token);
-       
+       System.out.println("fgfgfd");
         User user = userRepository.findById(userId).orElseThrow(() -> new UserException(environment.getProperty("status.user.errorMessage"),
 				Integer.parseInt(environment.getProperty("status.user.errorCode"))));
     	
 		Label label = modelMapper.map(labelDto,Label.class);
+		 System.out.println("fgsdsdsfgfd");
 		label.setCreateStamp(LocalDateTime.now());
 	    label.setModifiedStamp(LocalDateTime.now());
 		label.setUser(user);

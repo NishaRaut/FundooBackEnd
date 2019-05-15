@@ -48,7 +48,7 @@ public class Note {
 	@ManyToMany(mappedBy="Notes")
 	private Set<Label> labels;
     
-	@JsonIgnore
+	//@JsonIgnore
 	@ManyToMany(fetch=FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
 	@JoinTable(name = "note_user", joinColumns = @JoinColumn(name = "noteId"), 
 	inverseJoinColumns = @JoinColumn(name = "userId"))

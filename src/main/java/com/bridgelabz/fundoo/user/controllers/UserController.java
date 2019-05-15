@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,6 +42,7 @@ import com.bridgelabz.fundoo.response.ResponseToken;
 import com.bridgelabz.fundoo.user.dto.LoginDTO;
 import com.bridgelabz.fundoo.user.dto.ResetDTO;
 import com.bridgelabz.fundoo.user.dto.UserDTO;
+import com.bridgelabz.fundoo.user.model.User;
 import com.bridgelabz.fundoo.user.services.UserServices;
 import com.bridgelabz.fundoo.utility.UserToken;
 
@@ -51,7 +54,7 @@ public class UserController {
 	static final Logger logger=LoggerFactory.getLogger(UserController.class);
 	
 	@Autowired
-	UserServices userServices;
+	UserServices userService;
 	@Autowired
  	UserToken userToken ;
 //	String pathlocation= "/home/admin1/Music";
@@ -63,7 +66,7 @@ public class UserController {
 		logger.info("userDTO:"+userDTO);
 		logger.trace("User Registration");
 		System.out.println("Hello"+userDTO);
-		Response response = userServices.register(userDTO);
+		Response response = userService.register(userDTO);
 		return new ResponseEntity<Response>(response , HttpStatus.OK);
 	}
 	
@@ -76,7 +79,7 @@ public class UserController {
 		logger.trace("Login");
 		System.out.println(loginDTO.getEmail());
 		System.out.println(loginDTO.getPassword());
-		ResponseToken response = userServices.login(loginDTO, httpresponse);
+		ResponseToken response = userService.login(loginDTO, httpresponse);
 		return new ResponseEntity<ResponseToken>(response, HttpStatus.OK);
 	}
 	
@@ -88,7 +91,7 @@ public class UserController {
     	System.out.println("in verify");
 		logger.info("Token:"+token);
 		logger.trace("User Verification");
-		String result = userServices.validateEmailId(token);
+		String result = userService.validateEmailId(token);
 		return result;
 	}
 	
@@ -97,7 +100,7 @@ public class UserController {
 	{
 	/*	logger.info("email:"+loginDTO.getEmail());
 		logger.trace("Forget Password");*/
-		Response response = userServices.forgotPassword(email);
+		Response response = userService.forgotPassword(email);
 		return new ResponseEntity<Response>(response, HttpStatus.OK);
 	}
 	@PutMapping("resetpassword/{token}")
@@ -105,7 +108,7 @@ public class UserController {
 		logger.info("user password : " + password.getPassword());
 		logger.trace("reset user password");
 
-		Response response = userServices.resetPassword(password.getPassword(), token);
+		Response response = userService.resetPassword(password.getPassword(), token);
 		return new ResponseEntity<Response>(response, HttpStatus.OK);
 }
 
@@ -120,10 +123,10 @@ public class UserController {
 	
 		//File convertFile=new File(this.pathlocation+"/"+file.getOriginalFilename());
 		//System.out.println(convertFile);
-		String test = this.pathlocation.resolve(uuidString).toString();
+		//String test = this.pathlocation.resolve(uuidString).toString();
 		 Files.copy(file.getInputStream(), this.pathlocation.resolve(uuidString),
                  StandardCopyOption.REPLACE_EXISTING);
-		Response response=userServices.imageUpload(token,uuid.toString());
+		Response response=userService.imageUpload(token,uuid.toString());
 		
 		
 		return  new ResponseEntity<Response>(response,HttpStatus.OK);
@@ -131,13 +134,11 @@ public class UserController {
 	
 	 @GetMapping("/user/getProfile/{token}")
 	    public Resource getImageAll(@PathVariable("token") String token) {
-			System.out.println("@@@@@@@@@@@");
-			System.out.println("TTTTTTTTT:"+token);
+			
 			
 
 	    	long userId = userToken.tokenVerify(token);
-	    	System.out.println("YUUUUUUUUUUUU:"+userId);
-	    	String filename=userServices.getImage(userId);
+	    	String filename=userService.getImage(userId);
 	    	
 	    	System.out.println("file name:"+filename);
 	    	  Path file = this.pathlocation.resolve(filename);
@@ -156,7 +157,44 @@ public class UserController {
 	            throw new UploadFileNotFoundException("Could not read file: " + filename, e);
 	        }
 	    }
-
-
+////########
+//	 @ResponseBody
+//		@GetMapping("/user")
+//		public List<User> getAllUser()
+//		{
+//		
+//			return userService.getAll();
+//			
+//		}
+//	 @ResponseBody
+//		@GetMapping("/users")
+//		public List<User> getUserBYId(@RequestHeader(value="jwt_token") String token)
+//		{
+//		
+//			return userService.getById(token);
+//			
+//		}
+//		
+//	 @ResponseBody
+//		@GetMapping("/users/findemail")
+//		public List<User> collabInfo(@RequestParam String email)
+//		{
+//		
+//			return userService.getByEmail(email);
+//			
+//		}
+//
+//		@GetMapping("/findemailId")	
+//		public ResponseEntity<Response> findEmailId(@RequestParam String email)   
+//
+//	       {
+//			
+//		    
+//				Response response= userService.getUserData(email);
+//			
+//			
+//			return new ResponseEntity<Response>(response,HttpStatus.OK);
+//		
+//	       }
 }
 

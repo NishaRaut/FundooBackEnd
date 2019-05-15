@@ -108,6 +108,11 @@
 			<artifactId>simple-java-mail</artifactId>
 			<version>4.1.2</version>
 		</dependency>
+		<dependency>
+	<groupId> org.elasticsearch.client</groupId>
+	<artifactId>elasticsearch-rest-high-level-client</artifactId>
+	<version>LATEST</version>
+</dependency>
 		<!-- https://mvnrepository.com/artifact/org.springframework/spring-context-support -->
 		<dependency>
 			<groupId>org.springframework</groupId>

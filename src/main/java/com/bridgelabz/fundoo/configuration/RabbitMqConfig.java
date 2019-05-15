@@ -17,6 +17,11 @@ public class RabbitMqConfig {
 	private String userQueue;
 	@Value("${spring.rabbitmq.template.routing-key}")
 	private String userRoutingKey;
+	@Value("${spring.rabbitmq.template.default-receive-queue2}")
+	private String noteQueue;
+	@Value("${spring.rabbitmq.template.routing-key2}")
+	private String noteRoutingKey;
+	
 
 	@Bean
 	Exchange exchage() {
@@ -31,5 +36,14 @@ public class RabbitMqConfig {
 	@Bean
 	Binding userQueueBinding(Queue userQueue, DirectExchange exchange) {
 		return BindingBuilder.bind(userQueue).to(exchange).with(userRoutingKey);
+	}
+	@Bean
+	Queue noteQueue() {
+		return new Queue(noteQueue, true);
+	}
+
+	@Bean
+	Binding noteQueueBinding(Queue noteQueue, DirectExchange exchange) {
+		return BindingBuilder.bind(noteQueue).to(exchange).with(noteRoutingKey);
 	}
 }

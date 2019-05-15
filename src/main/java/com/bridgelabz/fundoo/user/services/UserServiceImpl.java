@@ -1,6 +1,8 @@
 package com.bridgelabz.fundoo.user.services;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
 import org.modelmapper.ModelMapper;
@@ -86,13 +88,16 @@ public class UserServiceImpl implements UserServices {
 		Optional<User> is_user_available=userRepository.findByEmail(loginuser.getEmail());
 		if(is_user_available.isPresent() && passwordEncoder.matches(loginuser.getPassword(),is_user_available.get().getPassword()) && is_user_available.get().isVerification()) 
 		{ 	
+			User user = is_user_available.get();
 			String generatedToken =userToken.generateToken(is_user_available.get().getId());
 			httpresponse.addHeader("JWT-Token",generatedToken);
 			System.out.println(generatedToken);
-			ResponseToken response =ResponseInfo.tokenStatusInfo(200, "login success", generatedToken );
+			UserDTO userDto = new UserDTO();
+			userDto.setFirstName(user.getFirstName());
+			userDto.setLastName(user.getLastName());
+			ResponseToken response =ResponseInfo.tokenStatusInfo(200, "login success", generatedToken,userDto );
 			return response; 
 		} 
-
 		else 
 		{ 
 			throw new Exception("Email and Password is not found"); 
@@ -154,7 +159,7 @@ public class UserServiceImpl implements UserServices {
 		long userID = userToken.tokenVerify(token);
 
 		User user=userRepository.findById(userID)
-				.orElseThrow(() -> new TokenException("User is not valid.........",400));
+				.orElseThrow(() -> new UserException(environment.getProperty("status.user.invalidUser"), Integer.parseInt(environment.getProperty("status.user.errorCode"))));
 
 		user.setImage(image);
 		userRepository.save(user);
@@ -166,11 +171,10 @@ public class UserServiceImpl implements UserServices {
 
 
 		User user=userRepository.findById(id)
-				.orElseThrow(() -> new TokenException( "User is not valid.........",400));
+				.orElseThrow(() -> new UserException(environment.getProperty("status.user.invalidUser"), Integer.parseInt(environment.getProperty("status.user.errorCode"))));
 
 		return user.getImage();
 	}
-
 
 
 }

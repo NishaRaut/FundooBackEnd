@@ -2,10 +2,13 @@ package com.bridgelabz.fundoo.response;
 
 import org.springframework.stereotype.Component;
 
+
+
 @Component
 public class Response {
 	private String statusMessage;
 	private int statusCode;
+	
     
 	public String getStatusMessage() {
 		return statusMessage;
@@ -19,5 +22,6 @@ public class Response {
 	public void setStatusCode(int statusCode) {
 		this.statusCode = statusCode;
 	}
+	
 	
 	}
